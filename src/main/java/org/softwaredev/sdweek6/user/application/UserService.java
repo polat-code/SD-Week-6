@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,11 +36,16 @@ public class UserService {
             .avatarName(userRequest.avatarName())
             .build();
     user = userRepository.save(user);
+    return createUserResponse(user);
+  }
+
+  private static UserResponse createUserResponse(User user) {
     return UserResponse.builder()
         .id(user.getId())
         .name(user.getName())
         .nickname(user.getNickname())
         .avatarName(user.getAvatarName())
+        .email(user.getEmail())
         .build();
   }
 
@@ -47,5 +53,24 @@ public class UserService {
     List<UserResponse> userResponses =
         userRequests.stream().map(this::createUserAndReturnResponse).collect(Collectors.toList());
     return new ResponseEntity<>(userResponses, HttpStatus.OK);
+  }
+
+  public ResponseEntity<List<UserResponse>> filterUsers(String email, Boolean active) {
+    List<User> users = new ArrayList<>();
+    if (email != null && active != null) {
+      users = userRepository.findByEmailContainingIgnoreCaseAndIsActiveUser(email, active);
+    } else if (email != null) {
+      users = userRepository.findByEmailContainingIgnoreCase(email);
+    } else if (active != null) {
+      users = userRepository.findByIsActiveUser(active);
+    } else {
+      users = userRepository.findAll();
+    }
+
+    return new ResponseEntity<>(convertUsersToUserResponses(users), HttpStatus.OK);
+  }
+
+  private List<UserResponse> convertUsersToUserResponses(List<User> users) {
+    return users.stream().map(UserService::createUserResponse).collect(Collectors.toList());
   }
 }

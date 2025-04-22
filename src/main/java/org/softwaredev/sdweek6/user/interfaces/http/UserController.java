@@ -5,10 +5,7 @@ import org.softwaredev.sdweek6.user.application.UserService;
 import org.softwaredev.sdweek6.user.domain.http.request.UserRequest;
 import org.softwaredev.sdweek6.user.domain.http.response.UserResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,9 +21,18 @@ public class UserController {
     return userService.createUser(userRequest);
   }
 
+  // Built-in Query Usage
   @PostMapping("/multiple")
   public ResponseEntity<List<UserResponse>> createMultipleUser(
       @RequestBody List<UserRequest> userRequests) {
     return userService.createMultipleUser(userRequests);
+  }
+
+  // JPA Query Usage
+  @GetMapping("/filter")
+  public ResponseEntity<List<UserResponse>> filterUsers(
+      @RequestParam(value = "email", required = false) String email,
+      @RequestParam(value = "active", required = false) Boolean active) {
+    return userService.filterUsers(email, active);
   }
 }
