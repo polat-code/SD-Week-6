@@ -35,4 +35,6 @@ public class UserController {
       @RequestParam(value = "active", required = false) Boolean active) {
     return userService.filterUsers(email, active);
   }
+
+
 }
