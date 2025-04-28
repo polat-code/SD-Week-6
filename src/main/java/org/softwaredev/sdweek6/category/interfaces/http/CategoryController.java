@@ -22,4 +22,6 @@ public class CategoryController {
       @RequestBody CreateCategoryRequest categoryRequest) {
     return categoryService.createCategory(categoryRequest);
   }
+
+
 }

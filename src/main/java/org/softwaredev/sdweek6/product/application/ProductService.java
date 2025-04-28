@@ -11,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -21,6 +25,13 @@ public class ProductService {
   public ResponseEntity<Product> createProduct(ProductRequest productRequest)
       throws CategoryNotFoundException {
 
+    Product product = createProductFromProductRequest(productRequest);
+
+    return new ResponseEntity<>(product, HttpStatus.OK);
+  }
+
+  private Product createProductFromProductRequest(ProductRequest productRequest)
+      throws CategoryNotFoundException {
     Category category = categoryService.findCategoryById(productRequest.categoryId());
 
     Product product =
@@ -29,8 +40,13 @@ public class ProductService {
             .category(category)
             .price(productRequest.price())
             .build();
-    product = productRepository.save(product);
 
-    return new ResponseEntity<>(product, HttpStatus.OK);
+    return productRepository.save(product);
+  }
+  public ResponseEntity<List<Product>> createMultipleProduct(List<ProductRequest> productRequests) throws CategoryNotFoundException {
+
+    List<Product> products = productRequests.stream().map(this::createProductFromProductRequest).collect(Collectors.toList());
+
+    return new ResponseEntity<>(products, HttpStatus.OK);
   }
 }

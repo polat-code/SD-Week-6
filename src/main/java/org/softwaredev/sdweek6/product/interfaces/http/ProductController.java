@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/product")
@@ -22,4 +24,11 @@ public class ProductController {
   public ResponseEntity<Product> createProduct(@RequestBody ProductRequest productRequest) throws CategoryNotFoundException {
     return productService.createProduct(productRequest);
   }
+
+  @PostMapping("/multiple")
+  public ResponseEntity<List<Product>> createMultipleProduct(@RequestBody List<ProductRequest> productRequests) throws CategoryNotFoundException {
+    return productService.createMultipleProduct(productRequests);
+  }
+
+
 }
